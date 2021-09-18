@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -56,12 +57,22 @@ func parseCSV(filename string) [][]string {
 }
 
 func main() {
-	fileName := "sample.csv"
-	data := parseCSV(fileName)
+	fileName := flag.String("file_path", "", "Path of the .csv file.")
+	flag.Parse()
+	_, err := os.Stat(*fileName)
+	if os.IsNotExist(err) {
+		fmt.Println("Please enter a valid filename as an argument to the function.")
+		fmt.Println("for more help, run the program with a '-h' flag.")
+		return
+	}
+	data := parseCSV(*fileName)
 	markdown, err := renderMarkdown(data)
 	if err != nil {
 		panic(err)
 	}
 	err = outputMarkdown(markdown)
+	if err != nil {
+		panic(err)
+	}
 	// fmt.Println(renderMarkdown(data))
 }
